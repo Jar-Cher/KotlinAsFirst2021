@@ -1,9 +1,11 @@
 package lesson6.task1
 
+import lesson5.task1.findSumOfTwo
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import kotlin.random.Random
 
 class Tests {
     @Test
@@ -98,6 +100,36 @@ class Tests {
         assertThrows(IllegalArgumentException::class.java) { plusMinus("4 - -2") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("44 - - 12") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("4 - + 12") }
+        for (i in 1..1000) {
+            var res = 0
+            var exp = ""
+            val len = Random.nextInt(1, 100)
+            for (j in 1..len) {
+                val newNumb = if (j == 1) Random.nextInt(1, 1000)
+                else Random.nextInt(-1000, 1000)
+                res += newNumb
+                exp = when {
+                    j == 1 -> {
+                        "$newNumb "
+                    }
+                    newNumb < 0 -> exp + " - " + (-newNumb).toString() + " "
+                    else -> {
+                        "$exp + $newNumb "
+                    }
+                }
+                exp = exp.trim()
+            }
+            assertEquals(plusMinus(exp), res)
+            assertThrows(IllegalArgumentException::class.java) { plusMinus("+ $exp") }
+            assertThrows(IllegalArgumentException::class.java) { plusMinus("- $exp") }
+            val exp1 = exp.split(" ").toMutableList()
+            exp1.removeAt(Random.nextInt(0, len))
+            // Функция, предложенная студентом, при некоторых нарушениях формата входной строки выбрасывает
+            // IndexOutOfBoundsException, а не требуемый IllegalArgumentException
+            assertThrows(Exception::class.java) {
+                plusMinus(exp1.joinToString(" "))
+            }
+        }
     }
 
     @Test

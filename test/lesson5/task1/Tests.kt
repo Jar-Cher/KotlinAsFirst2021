@@ -3,6 +3,7 @@ package lesson5.task1
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import kotlin.random.Random
 
 class Tests {
     @Test
@@ -320,6 +321,13 @@ class Tests {
             Pair(0, 1),
             findSumOfTwo(listOf(0, 0), 0)
         )
+        for (i in 1..1000) {
+            val list = List(Random.nextInt(2, 100)) { Random.nextInt(0, 100) }
+            val ans1 = findSumOfTwo(list, list.first() + list.last())
+            assertEquals(list[ans1.first] + list[ans1.second], list.first() + list.last())
+            val ans2 = findSumOfTwo(list, list.maxOrNull()!! + list.maxOrNull()!! + 1)
+            assertEquals(ans2, Pair(-1, -1))
+        }
     }
 
     @Test
