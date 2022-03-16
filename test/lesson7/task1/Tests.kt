@@ -3,7 +3,11 @@ package lesson7.task1
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import ru.spbstu.wheels.defaultCopy
 import java.io.File
+import java.lang.StringBuilder
+import kotlin.math.max
+import kotlin.random.Random
 
 class Tests {
 
@@ -229,6 +233,61 @@ Basic, Ruby, Swift.
         chooseLongestChaoticWord("input/chaotic_in1.txt", "temp.txt")
         assertFileContent("temp.txt", "Карминовый, Некрасивый")
         File("temp.txt").delete()
+        val letters = ('a'..'z')
+        for (i in 1..100) {
+            val testFile = File("input/input.txt").bufferedWriter()
+            var maxLen = 0
+            val ans = mutableSetOf<String>()
+            for (j in 1..Random.nextInt(1, 100)) {
+                val newWord = StringBuilder()
+                val isChaotic = (Random.nextInt(2) % 2) == 1
+                val freeLetters = letters.toMutableSet()
+                if (!isChaotic) {
+                    val wordLen = Random.nextInt(1, 50)
+                    val extraLetters = Random.nextInt(1, wordLen + 1)
+                    for (k in 1 until wordLen) {
+                        if ((Random.nextInt(2) % 2) == 1) {
+                            newWord.append(letters.random())
+                        } else {
+                            newWord.append(letters.random().uppercase())
+                        }
+                        if (Random.nextFloat() < extraLetters / (wordLen - k)) {
+                            if ((Random.nextInt(2) % 2) == 1) {
+                                newWord.append(newWord.random())
+                            } else {
+                                newWord.append(newWord.random().uppercase())
+                            }
+                        }
+                    }
+                } else {
+                    val wordLen = Random.nextInt(1, freeLetters.size)
+                    for (k in 1 until wordLen) {
+                        val newLetter = freeLetters.random()
+                        if ((Random.nextInt(2) % 2) == 1) {
+                            newWord.append(newLetter)
+                        } else {
+                            newWord.append(newLetter.uppercase())
+                        }
+                        freeLetters.remove(newLetter)
+                    }
+                    if (maxLen < newWord.length) {
+                        ans.clear()
+                        ans.add(newWord.toString())
+                        maxLen = newWord.length
+                    } else if (maxLen == newWord.length) {
+                        ans.add(newWord.toString())
+                    }
+                }
+                testFile.write(newWord.toString())
+                testFile.newLine()
+            }
+            testFile.close()
+            chooseLongestChaoticWord("input/input.txt", "temp.txt")
+            val words = File("temp.txt").readLines().toSet()
+            assertEquals(ans.toString(), words.toString())
+            File("temp.txt").delete()
+            File("input/input.txt").delete()
+        }
     }
 
 
